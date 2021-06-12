@@ -29,7 +29,7 @@ namespace RetroPieRomUploader.Pages.Roms
                 return NotFound();
             }
 
-            Rom = await _context.Rom.FirstOrDefaultAsync(m => m.ID == id);
+            Rom = await _context.Rom.Include(r => r.ConsoleType).FirstOrDefaultAsync(m => m.ID == id);
 
             if (Rom == null)
             {

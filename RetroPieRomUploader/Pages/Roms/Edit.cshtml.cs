@@ -23,6 +23,8 @@ namespace RetroPieRomUploader.Pages.Roms
         [BindProperty]
         public Rom Rom { get; set; }
 
+        public SelectList ConsoleList { get; set; }
+
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null)
@@ -36,6 +38,8 @@ namespace RetroPieRomUploader.Pages.Roms
             {
                 return NotFound();
             }
+
+            ConsoleList = new SelectList(await _context.ConsoleType.ToListAsync(), nameof(ConsoleType.ID), nameof(ConsoleType.Name));
             return Page();
         }
 

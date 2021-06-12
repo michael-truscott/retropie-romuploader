@@ -3,6 +3,7 @@
 
 @{
     ViewData["Title"] = "Create";
+    ViewData["ConsoleTypes"] = new List<string> { "Playstation", "SNES", "NES" };
 }
 
 <h1>Create</h1>
@@ -11,7 +12,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form method="post">
+        <form method="post" autocomplete="off">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Rom.Title" class="control-label"></label>
@@ -19,9 +20,10 @@
                 <span asp-validation-for="Rom.Title" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Rom.Console" class="control-label"></label>
-                <input asp-for="Rom.Console" class="form-control" />
-                <span asp-validation-for="Rom.Console" class="text-danger"></span>
+                <label asp-for="Rom.ConsoleTypeID" class="control-label"></label>
+                <select asp-for="Rom.ConsoleTypeID" asp-items="ViewData.Model.ConsoleList" class="form-control">
+                </select>
+                <span asp-validation-for="Rom.ConsoleTypeID" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Rom.ReleaseDate" class="control-label"></label>

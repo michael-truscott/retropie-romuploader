@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,7 +16,10 @@ namespace RetroPieRomUploader.Models
         public string Title { get; set; }
 
         [Required]
-        public string Console { get; set; }
+        [DisplayName("Console")]
+        public int ConsoleTypeID { get; set; }
+        [DisplayName("Console")]
+        public ConsoleType ConsoleType { get; set; }
 
         [DisplayName("Release Date")]
         [DataType(DataType.Date)]

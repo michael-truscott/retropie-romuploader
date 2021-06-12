@@ -15,5 +15,7 @@ namespace RetroPieRomUploader.Models
 
         [Required]
         public string DirectoryName { get; set; }
+
+        public List<Rom> Roms { get; set; }
     }
 }
