@@ -24,12 +24,6 @@ namespace RetroPieRomUploader.Pages.Roms
         public async Task OnGetAsync()
         {
             Rom = await _context.Rom.Include(rom => rom.ConsoleType).ToListAsync();
-
-            foreach (var rom in Rom)
-            {
-                var ctype = rom.ConsoleType;
-                Console.WriteLine(ctype?.Name);
-            }
         }
     }
 }

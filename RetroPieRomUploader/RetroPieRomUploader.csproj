@@ -5,6 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Roms\**" />
+    <Content Remove="Roms\**" />
+    <EmbeddedResource Remove="Roms\**" />
+    <None Remove="Roms\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Migrations\20210612121543_Rom_FK_ConsoleType.cs" />
     <Compile Remove="Migrations\20210612121543_Rom_FK_ConsoleType.Designer.cs" />
   </ItemGroup>

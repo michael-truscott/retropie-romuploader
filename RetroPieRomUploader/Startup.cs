@@ -26,6 +26,8 @@ namespace RetroPieRomUploader
         {
             services.AddRazorPages();
 
+            services.AddScoped<IRomFileManager, RomFileManager>();
+
             services.AddDbContext<RetroPieRomUploaderContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("RetroPieRomUploaderContext")));
         }

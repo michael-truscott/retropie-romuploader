@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31321.278
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RetroPieRomUploader", "RetroPieRomUploader\RetroPieRomUploader.csproj", "{5950E5A5-F816-40F0-834E-7BCFF83A5730}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RetroPieRomUploader", "RetroPieRomUploader\RetroPieRomUploader.csproj", "{5950E5A5-F816-40F0-834E-7BCFF83A5730}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RomUploaderTests", "RomUploaderTests\RomUploaderTests.csproj", "{840BB8CF-BD9E-48FE-91A9-C58165183FD4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{5950E5A5-F816-40F0-834E-7BCFF83A5730}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5950E5A5-F816-40F0-834E-7BCFF83A5730}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5950E5A5-F816-40F0-834E-7BCFF83A5730}.Release|Any CPU.Build.0 = Release|Any CPU
+		{840BB8CF-BD9E-48FE-91A9-C58165183FD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{840BB8CF-BD9E-48FE-91A9-C58165183FD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{840BB8CF-BD9E-48FE-91A9-C58165183FD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{840BB8CF-BD9E-48FE-91A9-C58165183FD4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

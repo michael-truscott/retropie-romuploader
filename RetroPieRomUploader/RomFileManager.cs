@@ -1,0 +1,43 @@
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace RetroPieRomUploader
+{
+    public interface IRomFileManager
+    {
+        string[] GetFilesForConsole(string console);
+        void MoveFileToConsoleDir(string srcFilePath, string targetFileName, string console);
+    }
+
+    public class RomFileManager : IRomFileManager
+    {
+        private readonly ILogger<RomFileManager> _logger;
+        private readonly IConfiguration _configuration;
+
+        private string _romDirectory;
+
+        public RomFileManager(ILogger<RomFileManager> logger, IConfiguration configuration)
+        {
+            _logger = logger;
+            _configuration = configuration;
+
+            _romDirectory = _configuration.GetValue<string>("RomDirectory");
+        }
+        
+        public string[] GetFilesForConsole(string console)
+        {
+            return Directory.GetFiles(Path.Combine(_romDirectory, console));
+        }
+
+        public void MoveFileToConsoleDir(string srcFilePath, string targetFileName, string console)
+        {
+            var consoleDir = Path.Combine(_romDirectory, console);
+            File.Move(srcFilePath, Path.Combine(consoleDir, targetFileName));
+        }
+    }
+}
