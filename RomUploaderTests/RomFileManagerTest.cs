@@ -77,6 +77,14 @@ namespace RomUploaderTests
                 foreach (var file in filePaths)
                     CollectionAssert.Contains(entry.Value, Path.GetFileName(file));
             }
+
+            Assert.IsTrue(romManager.RomFileExists("snes", "doom.rom"));
+            Assert.IsTrue(romManager.RomFileExists("nes", "excitebike.rom"));
+            Assert.IsTrue(romManager.RomFileExists("psx", "mgs.rom"));
+
+            Assert.IsFalse(romManager.RomFileExists("snes", "asdf.rom"));
+            Assert.IsFalse(romManager.RomFileExists("nes", "tyuhfjukdgyhjfghj.rom"));
+            Assert.IsFalse(romManager.RomFileExists("psx", "rg45g456h.rom"));
         }
     }
 }

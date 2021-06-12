@@ -12,6 +12,7 @@ namespace RetroPieRomUploader
     {
         string[] GetFilesForConsole(string console);
         void MoveFileToConsoleDir(string srcFilePath, string targetFileName, string console);
+        bool RomFileExists(string console, string romFile);
     }
 
     public class RomFileManager : IRomFileManager
@@ -32,6 +33,11 @@ namespace RetroPieRomUploader
         public string[] GetFilesForConsole(string console)
         {
             return Directory.GetFiles(Path.Combine(_romDirectory, console));
+        }
+
+        public bool RomFileExists(string console, string romFile)
+        {
+            return File.Exists(Path.Combine(_romDirectory, console, romFile));
         }
 
         public void MoveFileToConsoleDir(string srcFilePath, string targetFileName, string console)
