@@ -48,8 +48,7 @@ namespace RomUploaderTests
                 Directory.Delete(ROMS_DIR, true);
         }
 
-        [TestMethod]
-        public void TestMoveAndGetFiles()
+        private RomFileManager CreateRomFileManager()
         {
             var logger = Mock.Of<ILogger<RomFileManager>>();
             var configuration = new ConfigurationBuilder()
@@ -58,17 +57,36 @@ namespace RomUploaderTests
                     { "RomDirectory", ROMS_DIR},
                 })
                 .Build();
-            var romManager = new RomFileManager(logger, configuration);
+            return new RomFileManager(logger, configuration);
+        }
 
+        private void CreateDummyFiles(RomFileManager romManager)
+        {
             foreach (var entry in FILENAME_MAP)
             {
                 foreach (var file in entry.Value)
                 {
-                    var srcFilePath = Path.GetTempFileName();
+                    var srcFilePath = romManager.GetRomFilePath(entry.Key, file);
                     File.WriteAllText(srcFilePath, "blah asdf");
-                    romManager.MoveFileToConsoleDir(srcFilePath, file, entry.Key);
                 }
             }
+        }
+
+        private void DeleteFolderContents()
+        {
+            // cleanup files
+            foreach (var entry in FILENAME_MAP)
+            {
+                foreach (var file in Directory.GetFiles(Path.Combine(ROMS_DIR, entry.Key)))
+                    File.Delete(file);
+            }
+        }
+
+        [TestMethod]
+        public void TestCreateAndGetFiles()
+        {
+            var romManager = CreateRomFileManager();
+            CreateDummyFiles(romManager);
 
             foreach (var entry in FILENAME_MAP)
             {
@@ -85,6 +103,53 @@ namespace RomUploaderTests
             Assert.IsFalse(romManager.RomFileExists("snes", "asdf.rom"));
             Assert.IsFalse(romManager.RomFileExists("nes", "tyuhfjukdgyhjfghj.rom"));
             Assert.IsFalse(romManager.RomFileExists("psx", "rg45g456h.rom"));
+
+            DeleteFolderContents();
+        }
+
+        [TestMethod]
+        public void TestDeleteFiles()
+        {
+            var romManager = CreateRomFileManager();
+            CreateDummyFiles(romManager);
+
+            foreach (var entry in FILENAME_MAP)
+            {
+                foreach (var file in entry.Value)
+                {
+                    Assert.IsTrue(romManager.RomFileExists(entry.Key, file));
+                    romManager.DeleteRomFile(entry.Key, file);
+                    Assert.IsFalse(romManager.RomFileExists(entry.Key, file));
+                }
+            }
+
+            // contents should be empty anyway but make sure
+            DeleteFolderContents();
+        }
+
+        [TestMethod]
+        public void TestMoveFiles()
+        {
+            var romManager = CreateRomFileManager();
+            CreateDummyFiles(romManager);
+
+            var tests = new[]
+            {
+                new { sourceConsole = "snes", destConsole = "psx", romName = "doom.rom" },
+                new { sourceConsole = "nes", destConsole = "snes", romName = "excitebike.rom" },
+                new { sourceConsole = "psx", destConsole = "nes", romName = "mgs.rom" },
+            };
+
+            foreach (var test in tests)
+            {
+                Assert.IsTrue(romManager.RomFileExists(test.sourceConsole, test.romName));
+                Assert.IsFalse(romManager.RomFileExists(test.destConsole, test.romName));
+
+                romManager.MoveFileToConsoleDir(romManager.GetRomFilePath(test.sourceConsole, test.romName), test.romName, test.destConsole);
+
+                Assert.IsFalse(romManager.RomFileExists(test.sourceConsole, test.romName));
+                Assert.IsTrue(romManager.RomFileExists(test.destConsole, test.romName));
+            }
         }
     }
 }

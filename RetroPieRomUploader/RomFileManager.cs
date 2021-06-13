@@ -14,6 +14,7 @@ namespace RetroPieRomUploader
         void MoveFileToConsoleDir(string srcFilePath, string targetFileName, string console);
         bool RomFileExists(string console, string romFile);
         string GetRomFilePath(string console, string romFile);
+        void DeleteRomFile(string console, string romFile);
     }
 
     public class RomFileManager : IRomFileManager
@@ -50,6 +51,12 @@ namespace RetroPieRomUploader
         public string GetRomFilePath(string console, string romFile)
         {
             return Path.Combine(_romDirectory, console, romFile);
+        }
+
+        public void DeleteRomFile(string console, string romFile)
+        {
+            var path = GetRomFilePath(console, romFile);
+            File.Delete(path);
         }
     }
 }
