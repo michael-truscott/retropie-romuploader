@@ -9,6 +9,7 @@ using RetroPieRomUploader.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace RetroPieRomUploader
@@ -43,6 +44,11 @@ namespace RetroPieRomUploader
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                    {
+                        webBuilder.ConfigureAppConfiguration((configBuilder) =>
+                            configBuilder.AddJsonFile($"appsettings.linux.json", true));
+                    }
                     webBuilder.UseStartup<Startup>();
                 });
 
