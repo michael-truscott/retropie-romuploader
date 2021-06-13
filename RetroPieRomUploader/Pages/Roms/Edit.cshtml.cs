@@ -16,10 +16,12 @@ namespace RetroPieRomUploader.Pages.Roms
     public class EditModel : PageModel
     {
         private readonly RetroPieRomUploader.Data.RetroPieRomUploaderContext _context;
+        private readonly IRomFileManager _romFileManager;
 
-        public EditModel(RetroPieRomUploader.Data.RetroPieRomUploaderContext context)
+        public EditModel(RetroPieRomUploader.Data.RetroPieRomUploaderContext context, IRomFileManager romFileManager)
         {
             _context = context;
+            _romFileManager = romFileManager;
         }
 
         [BindProperty]
@@ -66,6 +68,8 @@ namespace RetroPieRomUploader.Pages.Roms
             {
                 return NotFound();
             }
+            var oldConsoleTypeID = rom.ConsoleTypeID;
+
             var entry = _context.Attach(rom);
             entry.CurrentValues.SetValues(new
             {
@@ -74,8 +78,19 @@ namespace RetroPieRomUploader.Pages.Roms
                 ConsoleTypeID = Rom.ConsoleTypeID,
             });
             await _context.SaveChangesAsync();
+            await MoveRomFileIfRequired(oldConsoleTypeID, rom);
 
             return RedirectToPage("./Index");
+        }
+
+        private async Task MoveRomFileIfRequired(int oldConsoleTypeID, Rom updatedRom)
+        {
+            if (oldConsoleTypeID == updatedRom.ConsoleTypeID)
+                return;
+
+            var oldConsole = await _context.ConsoleType.FindAsync(oldConsoleTypeID);
+            var newConsole = await _context.ConsoleType.FindAsync(updatedRom.ConsoleTypeID);
+            _romFileManager.MoveFileToConsoleDir(oldConsole.DirectoryName, newConsole.DirectoryName, updatedRom.Filename);
         }
     }
 }
