@@ -25,8 +25,7 @@ namespace RetroPieRomUploader
                 var services = scope.ServiceProvider;
                 try
                 {
-                    if (args.Contains("--dbmigrate"))
-                        DoDBMigrations(services);
+                    DoDBMigrations(services);
 
                     SeedData.Initialize(services);
                 }
@@ -34,6 +33,7 @@ namespace RetroPieRomUploader
                 {
                     var logger = services.GetRequiredService<ILogger<Program>>();
                     logger.LogError(ex, "An error occurred seeding the DB.");
+                    Environment.Exit(1);
                 }
             }
 
@@ -57,9 +57,21 @@ namespace RetroPieRomUploader
             var service = services.GetRequiredService<DbContextOptions<RetroPieRomUploaderContext>>();
             using (var context = new RetroPieRomUploaderContext(service))
             {
-                context.Database.Migrate();
-                Console.WriteLine("DB Migration completed");
-                Environment.Exit(0);
+                if (context.Database.GetPendingMigrations().Any())
+                {
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    try
+                    {
+                        logger.LogInformation("Performing DB migrations...");
+                        context.Database.Migrate();
+                        logger.LogInformation("DB migration completed");
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError(ex, "An error occurred during DB migration. Try deleting Main.db to rebuild the DB from scratch (this will delete existing data).");
+                        Environment.Exit(1);
+                    }
+                }
             }
         }
     }
