@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using RetroPieRomUploader.Data;
 using RetroPieRomUploader.Models;
 using System;
 using System.Collections.Generic;
@@ -22,6 +24,9 @@ namespace RetroPieRomUploader
                 var services = scope.ServiceProvider;
                 try
                 {
+                    if (args.Contains("--dbmigrate"))
+                        DoDBMigrations(services);
+
                     SeedData.Initialize(services);
                 }
                 catch (Exception ex)
@@ -40,5 +45,16 @@ namespace RetroPieRomUploader
                 {
                     webBuilder.UseStartup<Startup>();
                 });
+
+        private static void DoDBMigrations(IServiceProvider services)
+        {
+            var service = services.GetRequiredService<DbContextOptions<RetroPieRomUploaderContext>>();
+            using (var context = new RetroPieRomUploaderContext(service))
+            {
+                context.Database.Migrate();
+                Console.WriteLine("DB Migration completed");
+                Environment.Exit(0);
+            }
+        }
     }
 }

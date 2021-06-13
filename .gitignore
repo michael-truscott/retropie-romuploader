@@ -5,6 +5,7 @@
 
 # local testing rom data dir
 RetroPieRomUploader/Roms/
+*.db
 
 # User-specific files
 *.rsuser

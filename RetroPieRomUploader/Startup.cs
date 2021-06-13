@@ -29,7 +29,7 @@ namespace RetroPieRomUploader
             services.AddScoped<IRomFileManager, RomFileManager>();
 
             services.AddDbContext<RetroPieRomUploaderContext>(options =>
-                    options.UseSqlServer(Configuration.GetConnectionString("RetroPieRomUploaderContext")));
+                    options.UseSqlite(Configuration.GetConnectionString("RetroPieRomUploaderContext")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -2,7 +2,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RetroPieRomUploader.Data;
 
@@ -15,24 +14,21 @@ namespace RetroPieRomUploader.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.15")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "5.0.7");
 
             modelBuilder.Entity("RetroPieRomUploader.Models.ConsoleType", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("DirectoryName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("ID");
 
@@ -43,22 +39,21 @@ namespace RetroPieRomUploader.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("ConsoleTypeID")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Filename")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("ReleaseDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("ID");
 
@@ -74,6 +69,13 @@ namespace RetroPieRomUploader.Migrations
                         .HasForeignKey("ConsoleTypeID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("ConsoleType");
+                });
+
+            modelBuilder.Entity("RetroPieRomUploader.Models.ConsoleType", b =>
+                {
+                    b.Navigation("Roms");
                 });
 #pragma warning restore 612, 618
         }
