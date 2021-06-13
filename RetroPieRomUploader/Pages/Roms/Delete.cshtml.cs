@@ -14,10 +14,12 @@ namespace RetroPieRomUploader.Pages.Roms
     public class DeleteModel : PageModel
     {
         private readonly RetroPieRomUploader.Data.RetroPieRomUploaderContext _context;
+        private readonly IRomFileManager _romFileManager;
 
-        public DeleteModel(RetroPieRomUploader.Data.RetroPieRomUploaderContext context)
+        public DeleteModel(RetroPieRomUploader.Data.RetroPieRomUploaderContext context, IRomFileManager romFileManager)
         {
             _context = context;
+            _romFileManager = romFileManager;
         }
 
         [BindProperty]
@@ -53,9 +55,18 @@ namespace RetroPieRomUploader.Pages.Roms
             {
                 _context.Rom.Remove(rom);
                 await _context.SaveChangesAsync();
+                await DeleteRomFile(rom);
             }
 
             return RedirectToPage("./Index");
+        }
+
+        private async Task DeleteRomFile(Rom rom)
+        {
+            if (string.IsNullOrEmpty(rom.Filename))
+                return;
+            var console = await _context.ConsoleType.FindAsync(rom.ConsoleTypeID);
+            _romFileManager.DeleteRomFile(console.DirectoryName, rom.Filename);
         }
     }
 }
