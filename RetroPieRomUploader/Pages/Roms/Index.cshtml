@@ -17,10 +17,13 @@
                 @Html.DisplayNameFor(model => model.Rom[0].Title)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Rom[0].ConsoleType)
+                @Html.DisplayNameFor(model => model.Rom[0].ConsoleName)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Rom[0].ReleaseDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Rom[0].Filename)
             </th>
             <th></th>
         </tr>
@@ -32,10 +35,13 @@
                 @Html.DisplayFor(modelItem => item.Title)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ConsoleType.Name)
+                @Html.DisplayFor(modelItem => item.ConsoleName)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.ReleaseDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Filename)
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |

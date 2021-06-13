@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using RetroPieRomUploader.Data;
 using RetroPieRomUploader.Models;
+using RetroPieRomUploader.ViewModels;
 
 namespace RetroPieRomUploader.Pages.Roms
 {
@@ -19,11 +20,12 @@ namespace RetroPieRomUploader.Pages.Roms
             _context = context;
         }
 
-        public IList<Rom> Rom { get;set; }
+        public IList<RomVM> Rom { get;set; }
 
         public async Task OnGetAsync()
         {
-            Rom = await _context.Rom.Include(rom => rom.ConsoleType).ToListAsync();
+            Rom = (await _context.Rom.Include(rom => rom.ConsoleType).ToListAsync())
+                .Select(r => RomVM.FromRom(r)).ToList();
         }
     }
 }

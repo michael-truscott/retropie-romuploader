@@ -16,13 +16,13 @@ namespace RetroPieRomUploader.Models
         public string Title { get; set; }
 
         [Required]
-        [DisplayName("Console")]
         public int ConsoleTypeID { get; set; }
-        [DisplayName("Console")]
         public ConsoleType ConsoleType { get; set; }
 
-        [DisplayName("Release Date")]
         [DataType(DataType.Date)]
         public DateTime? ReleaseDate { get; set; }
+
+        [Required]
+        public string Filename { get; set; }
     }
 }
