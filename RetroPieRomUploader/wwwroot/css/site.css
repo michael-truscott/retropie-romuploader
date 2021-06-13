@@ -76,3 +76,10 @@ body {
 .rom-currentfilename {
     font-weight: bold;
 }
+
+/*
+    Rom Details page
+*/
+.details-filesize {
+    font-weight: bold;
+}

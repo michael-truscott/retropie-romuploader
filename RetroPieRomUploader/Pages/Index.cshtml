@@ -2,9 +2,13 @@
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
+    // Ctrl + E, Ctrl + W for word wrap
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">Welcome to RetroPieRomUploader!</h1>
+    <h4>A web-based ROM file manager for the RetroPie game emulation system.</h4>
+    <p>RetroPieRomUploader enables you to upload rom files from your PC to your <a href="https://retropie.org.uk/">RetroPie</a> installation directly from your web browser, without having to install an SSH or SCP/FTP client.</p>
+    <p>To add new rom files, simply go to the <a asp-page="./Roms/Index">Roms</a> page, create a new rom file entry and upload the file.</p>
+    <p>To refresh the available roms in RetroPie, restart EmulationStation if it is open (press start button -&gt; Quit -&gt; Restart EmulationStation). The new files should appear in EmulationStation after it finishes restarting.</p>
 </div>

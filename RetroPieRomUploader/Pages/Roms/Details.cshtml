@@ -42,7 +42,7 @@
                 }
                 else
                 {
-                    <span>(@((float)Model.FileSizeBytes / 1000) KB)</span>
+                    <span class="details-filesize">(@string.Format("{0:0.##} MB", ((float)Model.FileSizeBytes / 1000000)))</span>
                 }
             }
         </dd>
