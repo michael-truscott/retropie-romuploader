@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using RetroPieRomUploader;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -145,11 +146,21 @@ namespace RomUploaderTests
                 Assert.IsTrue(romManager.RomFileExists(test.sourceConsole, test.romName));
                 Assert.IsFalse(romManager.RomFileExists(test.destConsole, test.romName));
 
-                romManager.MoveFileToConsoleDir(romManager.GetRomFilePath(test.sourceConsole, test.romName), test.romName, test.destConsole);
+                romManager.MoveFileToConsoleDir(test.sourceConsole, test.destConsole, test.romName);
 
                 Assert.IsFalse(romManager.RomFileExists(test.sourceConsole, test.romName));
                 Assert.IsTrue(romManager.RomFileExists(test.destConsole, test.romName));
             }
+
+            var failingTests = new[]
+            {
+                new { sourceConsole = "_missingconsole", destConsole = "psx", romName = "doom.rom" },
+                new { sourceConsole = "psx", destConsole = "snes", romName = "_missing.rom" },
+            };
+
+            foreach (var test in failingTests)
+                Assert.ThrowsException<ArgumentException>(new Action(() => 
+                    romManager.MoveFileToConsoleDir(test.sourceConsole, test.destConsole, test.romName)));
         }
     }
 }

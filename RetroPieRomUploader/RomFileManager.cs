@@ -11,7 +11,7 @@ namespace RetroPieRomUploader
     public interface IRomFileManager
     {
         string[] GetFilesForConsole(string console);
-        void MoveFileToConsoleDir(string srcFilePath, string targetFileName, string console);
+        void MoveFileToConsoleDir(string srcConsole, string destConsole, string romFile);
         bool RomFileExists(string console, string romFile);
         string GetRomFilePath(string console, string romFile);
         void DeleteRomFile(string console, string romFile);
@@ -42,10 +42,14 @@ namespace RetroPieRomUploader
             return File.Exists(Path.Combine(_romDirectory, console, romFile));
         }
 
-        public void MoveFileToConsoleDir(string srcFilePath, string targetFileName, string console)
+        public void MoveFileToConsoleDir(string srcConsole, string destConsole, string romFile)
         {
-            var consoleDir = Path.Combine(_romDirectory, console);
-            File.Move(srcFilePath, Path.Combine(consoleDir, targetFileName));
+            var srcFilePath = GetRomFilePath(srcConsole, romFile);
+            if (!File.Exists(srcFilePath))
+                throw new ArgumentException($"File {srcConsole}/{romFile} does not exist");
+
+            var destFilePath = GetRomFilePath(destConsole, romFile);
+            File.Move(srcFilePath, destFilePath);
         }
 
         public string GetRomFilePath(string console, string romFile)
