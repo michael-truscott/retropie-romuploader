@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using RetroPieRomUploader.Data;
 using RetroPieRomUploader.Models;
@@ -21,11 +22,22 @@ namespace RetroPieRomUploader.Pages.Roms
         }
 
         public IList<RomVM> Rom { get;set; }
+        public SelectList ConsoleList { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public string ConsoleFilter { get; set; }
 
         public async Task OnGetAsync()
         {
-            Rom = (await _context.Rom.Include(rom => rom.ConsoleType).ToListAsync())
+            IQueryable<Rom> query = _context.Rom.Include(rom => rom.ConsoleType);
+            if (!string.IsNullOrEmpty(ConsoleFilter))
+                query = query.Where(rom => rom.ConsoleTypeID == ConsoleFilter);
+
+            Rom = (await query.ToListAsync())
                 .Select(r => RomVM.FromRom(r)).ToList();
+
+            ConsoleList = new SelectList(await _context.ConsoleType.OrderBy(c => c.Name).ToListAsync(),
+                                nameof(ConsoleType.ID), nameof(ConsoleType.Name));
         }
     }
 }
