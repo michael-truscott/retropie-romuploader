@@ -4,9 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using RetroPieRomUploader.Data;
 using RetroPieRomUploader.Models;
 using RetroPieRomUploader.ViewModels;
@@ -17,15 +19,17 @@ namespace RetroPieRomUploader.Pages.Roms
     {
         private readonly RetroPieRomUploader.Data.RetroPieRomUploaderContext _context;
         private readonly IRomFileManager _romFileManager;
+        private readonly ILogger<EditModel> _logger;
 
-        public EditModel(RetroPieRomUploader.Data.RetroPieRomUploaderContext context, IRomFileManager romFileManager)
+        public EditModel(RetroPieRomUploader.Data.RetroPieRomUploaderContext context, IRomFileManager romFileManager, ILogger<EditModel> logger)
         {
             _context = context;
             _romFileManager = romFileManager;
+            _logger = logger;
         }
 
         [BindProperty]
-        public RomVM Rom { get; set; }
+        public RomVM RomVM { get; set; }
 
         public SelectList ConsoleList { get; set; }
 
@@ -42,7 +46,7 @@ namespace RetroPieRomUploader.Pages.Roms
             {
                 return NotFound();
             }
-            Rom = RomVM.FromRom(rom);
+            RomVM = RomVM.FromRom(rom);
             return await InitPage();
         }
 
@@ -56,8 +60,10 @@ namespace RetroPieRomUploader.Pages.Roms
         // more details, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync(int id)
         {
-            // temp fix to stop validation failing on IFormFile
-            ModelState.Remove("Rom.RomFile");
+            // if user hasn't uploaded a file, don't throw a validation error and just process the remaining fields
+            if (ModelState[$"{nameof(RomVM)}.{nameof(RomVM.RomFile)}"].ValidationState != ModelValidationState.Valid)
+                ModelState.Remove($"{nameof(RomVM)}.{nameof(RomVM.RomFile)}");
+
             if (!ModelState.IsValid)
             {
                 return await InitPage();
@@ -70,20 +76,42 @@ namespace RetroPieRomUploader.Pages.Roms
             }
             var oldConsoleType = rom.ConsoleTypeID;
 
-            var entry = _context.Attach(rom);
-            entry.CurrentValues.SetValues(new
+            // Write the new file if one was uploaded
+            try
             {
-                Title = Rom.Title,
-                ReleaseDate = Rom.ReleaseDate,
-                ConsoleTypeID = Rom.ConsoleTypeID,
-            });
+                if (RomVM.RomFile != null)
+                {
+
+                    await RomVM.WriteUploadedRomFileToDisk(_romFileManager);
+                    _romFileManager.DeleteRomFile(rom.ConsoleTypeID, rom.Filename);
+                }
+            }
+            catch (ArgumentException ex)
+            {
+                _logger.LogError(ex, "Error writing rom file to disk");
+                ModelState.AddModelError("Rom.RomFile", "File already exists");
+                return await InitPage();
+            }
+
+            var entry = _context.Attach(rom);
+            var newValues = new Dictionary<string, object>()
+            {
+                { "Title", RomVM.Title },
+                { "ReleaseDate", RomVM.ReleaseDate },
+                { "ConsoleTypeID", RomVM.ConsoleTypeID },
+            };
+            if (RomVM.RomFile != null)
+                newValues.Add("Filename", RomVM.RomFile.FileName);
+            entry.CurrentValues.SetValues(newValues);
+
             await _context.SaveChangesAsync();
-            await MoveRomFileIfRequired(oldConsoleType, rom);
+            if (RomVM.RomFile == null)
+                MoveRomFileIfRequired(oldConsoleType, rom);
 
             return RedirectToPage("./Index");
         }
 
-        private async Task MoveRomFileIfRequired(string oldConsoleType, Rom updatedRom)
+        private void MoveRomFileIfRequired(string oldConsoleType, Rom updatedRom)
         {
             if (oldConsoleType == updatedRom.ConsoleTypeID)
                 return;

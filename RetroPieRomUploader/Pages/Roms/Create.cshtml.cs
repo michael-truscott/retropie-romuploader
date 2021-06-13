@@ -48,14 +48,12 @@ namespace RetroPieRomUploader.Pages.Roms
             }
 
 
-            // todo: make validation display more nicely
             try
             {
                 await Rom.WriteUploadedRomFileToDisk(_romFileManager);
             }
             catch (ArgumentException ex)
             {
-                // todo: show error
                 _logger.LogError(ex, "Error writing rom file to disk");
                 ModelState.AddModelError("Rom.RomFile", "File already exists");
                 return Page();

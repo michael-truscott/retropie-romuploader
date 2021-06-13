@@ -11,24 +11,30 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form method="post" autocomplete="off">
+        <form enctype="multipart/form-data" method="post" autocomplete="off">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Rom.ID" />
+            <input type="hidden" asp-for="RomVM.ID" />
             <div class="form-group">
-                <label asp-for="Rom.Title" class="control-label"></label>
-                <input asp-for="Rom.Title" class="form-control" />
-                <span asp-validation-for="Rom.Title" class="text-danger"></span>
+                <label asp-for="RomVM.Title" class="control-label"></label>
+                <input asp-for="RomVM.Title" class="form-control" />
+                <span asp-validation-for="RomVM.Title" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Rom.ConsoleTypeID" class="control-label"></label>
-                <select asp-for="Rom.ConsoleTypeID" asp-items="ViewData.Model.ConsoleList" class="form-control">
+                <label asp-for="RomVM.ConsoleTypeID" class="control-label"></label>
+                <select asp-for="RomVM.ConsoleTypeID" asp-items="ViewData.Model.ConsoleList" class="form-control">
                 </select>
-                <span asp-validation-for="Rom.ConsoleTypeID" class="text-danger"></span>
+                <span asp-validation-for="RomVM.ConsoleTypeID" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Rom.ReleaseDate" class="control-label"></label>
-                <input asp-for="Rom.ReleaseDate" class="form-control" />
-                <span asp-validation-for="Rom.ReleaseDate" class="text-danger"></span>
+                <label asp-for="RomVM.ReleaseDate" class="control-label"></label>
+                <input asp-for="RomVM.ReleaseDate" class="form-control" />
+                <span asp-validation-for="RomVM.ReleaseDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Replace Uploaded File</label>
+                <p>Current file is <span class="rom-currentfilename">@Model.RomVM.Filename</span></p>
+                <input asp-for="RomVM.RomFile" type="file" class="form-control" data-val="false"/>
+                <span asp-validation-for="RomVM.RomFile" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

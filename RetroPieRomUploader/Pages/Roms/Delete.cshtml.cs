@@ -63,8 +63,6 @@ namespace RetroPieRomUploader.Pages.Roms
 
         private async Task DeleteRomFile(Rom rom)
         {
-            if (string.IsNullOrEmpty(rom.Filename))
-                return;
             var console = await _context.ConsoleType.FindAsync(rom.ConsoleTypeID);
             _romFileManager.DeleteRomFile(console.ID, rom.Filename);
         }

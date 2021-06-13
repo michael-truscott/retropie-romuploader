@@ -59,6 +59,8 @@ namespace RetroPieRomUploader
 
         public void DeleteRomFile(string console, string romFile)
         {
+            if (string.IsNullOrEmpty(romFile))
+                return;
             var path = GetRomFilePath(console, romFile);
             File.Delete(path);
         }
