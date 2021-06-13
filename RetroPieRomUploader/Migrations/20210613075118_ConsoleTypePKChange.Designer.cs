@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RetroPieRomUploader.Data;
 
 namespace RetroPieRomUploader.Migrations
 {
     [DbContext(typeof(RetroPieRomUploaderContext))]
-    partial class RetroPieRomUploaderContextModelSnapshot : ModelSnapshot
+    [Migration("20210613075118_ConsoleTypePKChange")]
+    partial class ConsoleTypePKChange
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

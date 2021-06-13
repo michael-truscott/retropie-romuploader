@@ -26,7 +26,7 @@ namespace RetroPieRomUploader.Pages.Roms
 
         public async Task<IActionResult> OnGetAsync()
         {
-            ConsoleList = new SelectList(await _context.ConsoleType.ToListAsync(), nameof(ConsoleType.ID), nameof(ConsoleType.Name));
+            ConsoleList = new SelectList(await _context.ConsoleType.OrderBy(c => c.Name).ToListAsync(), nameof(ConsoleType.ID), nameof(ConsoleType.Name));
             return Page();
         }
 
@@ -46,10 +46,10 @@ namespace RetroPieRomUploader.Pages.Roms
 
             var console = await _context.ConsoleType.FirstOrDefaultAsync(c => c.ID == Rom.ConsoleTypeID);
             // todo: make validation display more nicely
-            if (_romFileManager.RomFileExists(console.DirectoryName, Rom.RomFile.FileName))
+            if (_romFileManager.RomFileExists(console.ID, Rom.RomFile.FileName))
                 throw new ArgumentException($"File {Rom.RomFile.FileName} already exists on disk.");
 
-            var filepath = _romFileManager.GetRomFilePath(console.DirectoryName, Rom.RomFile.FileName);
+            var filepath = _romFileManager.GetRomFilePath(console.ID, Rom.RomFile.FileName);
             using (var stream = System.IO.File.OpenWrite(filepath))
                 await Rom.RomFile.CopyToAsync(stream);
 

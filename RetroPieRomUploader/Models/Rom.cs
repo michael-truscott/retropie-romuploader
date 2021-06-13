@@ -16,7 +16,7 @@ namespace RetroPieRomUploader.Models
         public string Title { get; set; }
 
         [Required]
-        public int ConsoleTypeID { get; set; }
+        public string ConsoleTypeID { get; set; }
         public ConsoleType ConsoleType { get; set; }
 
         [DataType(DataType.Date)]

@@ -18,7 +18,7 @@ namespace RetroPieRomUploader.ViewModels
 
         [Required]
         [DisplayName("Console")]
-        public int ConsoleTypeID { get; set; }
+        public string ConsoleTypeID { get; set; }
         
         [DisplayName("Console")]
         public string ConsoleName => _consoleType?.Name;

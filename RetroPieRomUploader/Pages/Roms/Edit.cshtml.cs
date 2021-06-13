@@ -48,7 +48,7 @@ namespace RetroPieRomUploader.Pages.Roms
 
         private async Task<IActionResult> InitPage()
         {
-            ConsoleList = new SelectList(await _context.ConsoleType.ToListAsync(), nameof(ConsoleType.ID), nameof(ConsoleType.Name));
+            ConsoleList = new SelectList(await _context.ConsoleType.OrderBy(c => c.Name).ToListAsync(), nameof(ConsoleType.ID), nameof(ConsoleType.Name));
             return Page();
         }
 
@@ -68,7 +68,7 @@ namespace RetroPieRomUploader.Pages.Roms
             {
                 return NotFound();
             }
-            var oldConsoleTypeID = rom.ConsoleTypeID;
+            var oldConsoleType = rom.ConsoleTypeID;
 
             var entry = _context.Attach(rom);
             entry.CurrentValues.SetValues(new
@@ -78,19 +78,17 @@ namespace RetroPieRomUploader.Pages.Roms
                 ConsoleTypeID = Rom.ConsoleTypeID,
             });
             await _context.SaveChangesAsync();
-            await MoveRomFileIfRequired(oldConsoleTypeID, rom);
+            await MoveRomFileIfRequired(oldConsoleType, rom);
 
             return RedirectToPage("./Index");
         }
 
-        private async Task MoveRomFileIfRequired(int oldConsoleTypeID, Rom updatedRom)
+        private async Task MoveRomFileIfRequired(string oldConsoleType, Rom updatedRom)
         {
-            if (oldConsoleTypeID == updatedRom.ConsoleTypeID)
+            if (oldConsoleType == updatedRom.ConsoleTypeID)
                 return;
 
-            var oldConsole = await _context.ConsoleType.FindAsync(oldConsoleTypeID);
-            var newConsole = await _context.ConsoleType.FindAsync(updatedRom.ConsoleTypeID);
-            _romFileManager.MoveFileToConsoleDir(oldConsole.DirectoryName, newConsole.DirectoryName, updatedRom.Filename);
+            _romFileManager.MoveFileToConsoleDir(oldConsoleType, updatedRom.ConsoleTypeID, updatedRom.Filename);
         }
     }
 }
