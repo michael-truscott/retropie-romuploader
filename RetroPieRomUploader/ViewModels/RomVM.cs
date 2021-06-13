@@ -31,6 +31,16 @@ namespace RetroPieRomUploader.ViewModels
         [DisplayName("Upload Rom File")]
         public IFormFile RomFile { get; set; }
 
+        public async Task WriteUploadedRomFileToDisk(IRomFileManager romFileManager)
+        {
+            if (romFileManager.RomFileExists(ConsoleTypeID, RomFile.FileName))
+                throw new ArgumentException($"File {RomFile.FileName} already exists on disk.");
+
+            var filepath = romFileManager.GetRomFilePath(ConsoleTypeID, RomFile.FileName);
+            using (var stream = System.IO.File.OpenWrite(filepath))
+                await RomFile.CopyToAsync(stream);
+        }
+
         public string Filename => $"{_filename}";
 
 

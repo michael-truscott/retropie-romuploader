@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using RetroPieRomUploader.Data;
 using RetroPieRomUploader.Models;
 using RetroPieRomUploader.ViewModels;
@@ -17,11 +18,13 @@ namespace RetroPieRomUploader.Pages.Roms
     {
         private readonly RetroPieRomUploader.Data.RetroPieRomUploaderContext _context;
         private readonly IRomFileManager _romFileManager;
+        private ILogger<CreateModel> _logger;
 
-        public CreateModel(RetroPieRomUploader.Data.RetroPieRomUploaderContext context, IRomFileManager romFileManager)
+        public CreateModel(RetroPieRomUploader.Data.RetroPieRomUploaderContext context, IRomFileManager romFileManager, ILogger<CreateModel> logger)
         {
             _context = context;
             _romFileManager = romFileManager;
+            _logger = logger;
         }
 
         public async Task<IActionResult> OnGetAsync()
@@ -44,15 +47,19 @@ namespace RetroPieRomUploader.Pages.Roms
                 return Page();
             }
 
-            var console = await _context.ConsoleType.FirstOrDefaultAsync(c => c.ID == Rom.ConsoleTypeID);
+
             // todo: make validation display more nicely
-            if (_romFileManager.RomFileExists(console.ID, Rom.RomFile.FileName))
-                throw new ArgumentException($"File {Rom.RomFile.FileName} already exists on disk.");
-
-            var filepath = _romFileManager.GetRomFilePath(console.ID, Rom.RomFile.FileName);
-            using (var stream = System.IO.File.OpenWrite(filepath))
-                await Rom.RomFile.CopyToAsync(stream);
-
+            try
+            {
+                await Rom.WriteUploadedRomFileToDisk(_romFileManager);
+            }
+            catch (ArgumentException ex)
+            {
+                // todo: show error
+                _logger.LogError(ex, "Error writing rom file to disk");
+                ModelState.AddModelError("Rom.RomFile", "File already exists");
+                return Page();
+            }
 
             var rom = Rom.ToRom();
             _context.Rom.Add(rom);
