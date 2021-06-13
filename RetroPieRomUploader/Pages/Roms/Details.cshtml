@@ -35,6 +35,16 @@
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Rom.Filename)
+            @{ 
+                if (!RomFileManager.RomFileExists(Model.Rom.ConsoleTypeID, Model.Rom.Filename))
+                {
+                    <span class="text-danger">(file missing on disk)</span>
+                }
+                else
+                {
+                    <span>(@((float)Model.FileSizeBytes / 1000) KB)</span>
+                }
+            }
         </dd>
     </dl>
 </div>
