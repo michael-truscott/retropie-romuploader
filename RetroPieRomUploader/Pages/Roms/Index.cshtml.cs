@@ -21,7 +21,7 @@ namespace RetroPieRomUploader.Pages.Roms
             _context = context;
         }
 
-        public IList<RomVM> Rom { get;set; }
+        public IList<RomDetailsVM> RomDetails { get;set; }
         public SelectList ConsoleList { get; set; }
 
         [BindProperty(SupportsGet = true)]
@@ -29,12 +29,14 @@ namespace RetroPieRomUploader.Pages.Roms
 
         public async Task OnGetAsync()
         {
-            IQueryable<Rom> query = _context.Rom.Include(rom => rom.ConsoleType);
+            IQueryable<Rom> query = _context.Rom.Include(rom => rom.ConsoleType)
+                                                .Include(rom => rom.FileEntries)
+                                                .AsNoTracking();
             if (!string.IsNullOrEmpty(ConsoleFilter))
                 query = query.Where(rom => rom.ConsoleTypeID == ConsoleFilter);
 
-            Rom = (await query.ToListAsync())
-                .Select(r => RomVM.FromRom(r)).ToList();
+            RomDetails = (await query.ToListAsync())
+                .Select(r => new RomDetailsVM(r)).ToList();
 
             ConsoleList = new SelectList(await _context.ConsoleType.OrderBy(c => c.Name).ToListAsync(),
                                 nameof(ConsoleType.ID), nameof(ConsoleType.Name));

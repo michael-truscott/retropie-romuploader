@@ -29,8 +29,7 @@ namespace RetroPieRomUploader.Pages.Roms
         }
 
         [BindProperty]
-        public RomVM RomVM { get; set; }
-
+        public EditRomVM RomVM { get; set; }
         public SelectList ConsoleList { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
@@ -40,13 +39,15 @@ namespace RetroPieRomUploader.Pages.Roms
                 return NotFound();
             }
 
-            var rom = await _context.Rom.FirstOrDefaultAsync(m => m.ID == id);
+            var rom = await _context.Rom
+                .Include(e => e.FileEntries)
+                .FirstOrDefaultAsync(m => m.ID == id);
 
             if (rom == null)
             {
                 return NotFound();
             }
-            RomVM = RomVM.FromRom(rom);
+            RomVM = EditRomVM.FromRom(rom);
             return await InitPage();
         }
 
@@ -60,63 +61,57 @@ namespace RetroPieRomUploader.Pages.Roms
         // more details, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync(int id)
         {
-            // if user hasn't uploaded a file, don't throw a validation error and just process the remaining fields
-            if (ModelState[$"{nameof(RomVM)}.{nameof(RomVM.RomFile)}"].ValidationState != ModelValidationState.Valid)
-                ModelState.Remove($"{nameof(RomVM)}.{nameof(RomVM.RomFile)}");
-
             if (!ModelState.IsValid)
             {
                 return await InitPage();
             }
 
-            var rom = await _context.Rom.FindAsync(id);
+            var rom = await _context.Rom
+                .Include(e => e.FileEntries)
+                .FirstOrDefaultAsync(e => e.ID == id);
             if (rom == null)
             {
                 return NotFound();
             }
+            
             var oldConsoleType = rom.ConsoleTypeID;
 
-            // Write the new file if one was uploaded
+            var entry = _context.Attach(rom);
+            entry.CurrentValues.SetValues(RomVM);
+
             try
             {
-                if (RomVM.RomFile != null)
-                {
-
-                    await RomVM.WriteUploadedRomFileToDisk(_romFileManager);
-                    _romFileManager.DeleteRomFile(rom.ConsoleTypeID, rom.Filename);
-                }
+                await MoveRomFileIfRequired(oldConsoleType, rom);
             }
             catch (ArgumentException ex)
             {
-                _logger.LogError(ex, "Error writing rom file to disk");
-                ModelState.AddModelError("Rom.RomFile", "File already exists");
+                _logger.LogError(ex, "Error moving rom files");
+                ModelState.AddModelError("RomVM.ConsoleTypeID", ex.Message);
+                RomVM = EditRomVM.FromRom(rom);
                 return await InitPage();
             }
 
-            var entry = _context.Attach(rom);
-            var newValues = new Dictionary<string, object>()
-            {
-                { "Title", RomVM.Title },
-                { "ReleaseDate", RomVM.ReleaseDate },
-                { "ConsoleTypeID", RomVM.ConsoleTypeID },
-            };
-            if (RomVM.RomFile != null)
-                newValues.Add("Filename", RomVM.RomFile.FileName);
-            entry.CurrentValues.SetValues(newValues);
-
             await _context.SaveChangesAsync();
-            if (RomVM.RomFile == null)
-                MoveRomFileIfRequired(oldConsoleType, rom);
 
             return RedirectToPage("./Index");
         }
 
-        private void MoveRomFileIfRequired(string oldConsoleType, Rom updatedRom)
+        private async Task MoveRomFileIfRequired(string oldConsoleType, Rom updatedRom)
         {
             if (oldConsoleType == updatedRom.ConsoleTypeID)
                 return;
 
-            _romFileManager.MoveFileToConsoleDir(oldConsoleType, updatedRom.ConsoleTypeID, updatedRom.Filename);
+            var existingFile = updatedRom.FileEntries.FirstOrDefault(e => _romFileManager.RomFileExists(updatedRom.ConsoleTypeID, e.Filename));
+            if (existingFile != null)
+            {
+                var owningRom = await _context.Rom.Where(rom => rom.ConsoleTypeID == updatedRom.ConsoleTypeID &&
+                                    rom.FileEntries.Any(fe => fe.Filename == existingFile.Filename))
+                                    .FirstOrDefaultAsync();
+                throw new ArgumentException($"A file named {existingFile.Filename} already exists in the {updatedRom.ConsoleTypeID} console folder (Associated with the rom \"{owningRom?.Title ?? "(unknown)"}\")");
+            }
+
+            foreach (var entry in updatedRom.FileEntries)
+                _romFileManager.MoveFileToConsoleDir(oldConsoleType, updatedRom.ConsoleTypeID, entry.Filename);
         }
     }
 }

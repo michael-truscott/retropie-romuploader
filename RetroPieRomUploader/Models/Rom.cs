@@ -22,7 +22,6 @@ namespace RetroPieRomUploader.Models
         [DataType(DataType.Date)]
         public DateTime? ReleaseDate { get; set; }
 
-        [Required]
-        public string Filename { get; set; }
+        public List<RomFileEntry> FileEntries { get; set; }
     }
 }

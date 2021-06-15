@@ -23,7 +23,8 @@ namespace RetroPieRomUploader.Pages.Roms
             _romFileManager = romFileManager;
         }
 
-        public RomVM Rom { get; set; }
+        public RomDetailsVM Rom { get; set; }
+        public Dictionary<string, long> FileSizes { get; set; }
         public long FileSizeBytes { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
@@ -33,16 +34,24 @@ namespace RetroPieRomUploader.Pages.Roms
                 return NotFound();
             }
 
-            var rom = await _context.Rom.Include(m => m.ConsoleType).FirstOrDefaultAsync(m => m.ID == id);
+            var rom = await _context.Rom.Include(m => m.ConsoleType)
+                                        .Include(m => m.FileEntries)
+                                        .AsNoTracking()
+                                        .FirstOrDefaultAsync(m => m.ID == id);
             if (rom == null)
             {
                 return NotFound();
             }
-            Rom = RomVM.FromRom(rom);
-            if (_romFileManager.RomFileExists(Rom.ConsoleTypeID, Rom.Filename))
+            Rom = new RomDetailsVM(rom);
+            
+            FileSizes = new Dictionary<string, long>();
+            foreach (var file in Rom.FileEntries)
             {
-                var filePath = _romFileManager.GetRomFilePath(Rom.ConsoleTypeID, Rom.Filename);
-                FileSizeBytes = new FileInfo(filePath).Length;
+                if (_romFileManager.RomFileExists(Rom.ConsoleType.ID, file))
+                {
+                    var filePath = _romFileManager.GetRomFilePath(Rom.ConsoleType.ID, file);
+                    FileSizes.Add(file, new FileInfo(filePath).Length);
+                }
             }
             return Page();
         }

@@ -21,34 +21,41 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Rom[0].Title)
+                @Html.DisplayNameFor(model => model.RomDetails[0].Title)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Rom[0].ConsoleName)
+                @Html.DisplayNameFor(model => model.RomDetails[0].ConsoleType)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Rom[0].ReleaseDate)
+                @Html.DisplayNameFor(model => model.RomDetails[0].ReleaseDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Rom[0].Filename)
+                @Html.DisplayNameFor(model => model.RomDetails[0].FileEntries)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.Rom) {
+@foreach (var item in Model.RomDetails) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Title)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ConsoleName)
+                @Html.DisplayFor(modelItem => item.ConsoleType.Name)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.ReleaseDate)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Filename)
+                <table class="table table-borderless">
+                @foreach (var file in item.FileEntries)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => file)</td>
+                    </tr>
+                }
+                </table>
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |

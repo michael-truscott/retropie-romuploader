@@ -22,8 +22,7 @@ namespace RetroPieRomUploader.Pages.Roms
             _romFileManager = romFileManager;
         }
 
-        [BindProperty]
-        public RomVM Rom { get; set; }
+        public RomDetailsVM Rom { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -32,13 +31,16 @@ namespace RetroPieRomUploader.Pages.Roms
                 return NotFound();
             }
 
-            var rom = await _context.Rom.Include(r => r.ConsoleType).FirstOrDefaultAsync(m => m.ID == id);
+            var rom = await _context.Rom
+                .Include(r => r.ConsoleType)
+                .Include(r => r.FileEntries)
+                .FirstOrDefaultAsync(m => m.ID == id);
 
             if (rom == null)
             {
                 return NotFound();
             }
-            Rom = RomVM.FromRom(rom);
+            Rom = new RomDetailsVM(rom);
             return Page();
         }
 
@@ -49,22 +51,25 @@ namespace RetroPieRomUploader.Pages.Roms
                 return NotFound();
             }
 
-            var rom = await _context.Rom.FindAsync(id);
+            var rom = await _context.Rom
+                .Include(e => e.FileEntries)
+                .FirstOrDefaultAsync(e => e.ID == id);
 
             if (rom != null)
             {
                 _context.Rom.Remove(rom);
                 await _context.SaveChangesAsync();
-                await DeleteRomFile(rom);
+                DeleteRomFile(rom);
             }
 
             return RedirectToPage("./Index");
         }
 
-        private async Task DeleteRomFile(Rom rom)
+        private void DeleteRomFile(Rom rom)
         {
-            var console = await _context.ConsoleType.FindAsync(rom.ConsoleTypeID);
-            _romFileManager.DeleteRomFile(console.ID, rom.Filename);
+            var console = rom.ConsoleTypeID;
+            foreach (var entry in rom.FileEntries)
+                _romFileManager.DeleteRomFile(console, entry.Filename);
         }
     }
 }

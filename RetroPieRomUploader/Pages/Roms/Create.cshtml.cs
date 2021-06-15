@@ -34,7 +34,7 @@ namespace RetroPieRomUploader.Pages.Roms
         }
 
         [BindProperty]
-        public RomVM Rom { get; set; }
+        public CreateRomVM Rom { get; set; }
 
         public SelectList ConsoleList { get; set; }
 
@@ -47,20 +47,27 @@ namespace RetroPieRomUploader.Pages.Roms
                 return Page();
             }
 
-
             try
             {
-                await Rom.WriteUploadedRomFileToDisk(_romFileManager);
+                await Rom.WriteUploadedRomFilesToDisk(_romFileManager);
             }
             catch (ArgumentException ex)
             {
                 _logger.LogError(ex, "Error writing rom file to disk");
-                ModelState.AddModelError("Rom.RomFile", "File already exists");
+                ModelState.AddModelError("Rom.RomFile", ex.Message);
                 return Page();
             }
 
-            var rom = Rom.ToRom();
-            _context.Rom.Add(rom);
+            var newRom = new Rom();
+            _context.Rom.Add(newRom);
+            await TryUpdateModelAsync<Rom>(newRom, "Rom",
+                r => r.Title,
+                r => r.ConsoleTypeID,
+                r => r.ReleaseDate);
+            newRom.FileEntries = Rom.FileUploads.Select(file => new RomFileEntry
+                {
+                    Filename = file.FileName
+                }).ToList();
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");

@@ -31,10 +31,13 @@
                 <span asp-validation-for="RomVM.ReleaseDate" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label class="control-label">Replace Uploaded File</label>
-                <p>Current file is <span class="rom-currentfilename">@Model.RomVM.Filename</span></p>
-                <input asp-for="RomVM.RomFile" type="file" class="form-control" data-val="false"/>
-                <span asp-validation-for="RomVM.RomFile" class="text-danger"></span>
+                <label class="control-label">Associated File(s)</label>
+                <ul>
+                    @foreach (var file in Model.RomVM.FileEntries)
+                    {
+                        <li>@file</li>
+                    }
+                </ul>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

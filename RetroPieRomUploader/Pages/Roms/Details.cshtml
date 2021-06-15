@@ -19,10 +19,10 @@
             @Html.DisplayFor(model => model.Rom.Title)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Rom.ConsoleName)
+            @Html.DisplayNameFor(model => model.Rom.ConsoleType)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Rom.ConsoleName)
+            @Html.DisplayFor(model => model.Rom.ConsoleType.Name)
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Rom.ReleaseDate)
@@ -31,20 +31,27 @@
             @Html.DisplayFor(model => model.Rom.ReleaseDate)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Rom.Filename)
+            @Html.DisplayNameFor(model => model.Rom.FileEntries)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Rom.Filename)
-            @{ 
-                if (!RomFileManager.RomFileExists(Model.Rom.ConsoleTypeID, Model.Rom.Filename))
+            <table class="table table-borderless">
+                @foreach (var file in Model.Rom.FileEntries)
                 {
-                    <span class="text-danger">(file missing on disk)</span>
+                <tr>
+                    <td>
+                        @Html.DisplayFor(model => file)
+                        @if (Model.FileSizes.TryGetValue(file, out long bytes))
+                        {
+                            <span class="details-filesize">(@string.Format("{0:0.##} MB", ((float)bytes / 1000000)))</span>
+                        }
+                        else
+                        {
+                            <span class="text-danger">(file missing on disk)</span>
+                        }
+                    </td>
+                </tr>
                 }
-                else
-                {
-                    <span class="details-filesize">(@string.Format("{0:0.##} MB", ((float)Model.FileSizeBytes / 1000000)))</span>
-                }
-            }
+            </table>
         </dd>
     </dl>
 </div>

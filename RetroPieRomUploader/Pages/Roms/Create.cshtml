@@ -3,7 +3,6 @@
 
 @{
     ViewData["Title"] = "Create";
-    ViewData["ConsoleTypes"] = new List<string> { "Playstation", "SNES", "NES" };
 }
 
 <h1>Create</h1>
@@ -31,9 +30,9 @@
                 <span asp-validation-for="Rom.ReleaseDate" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Rom.RomFile" class="control-label"></label>
-                <input asp-for="Rom.RomFile" type="file" class="form-control" />
-                <span asp-validation-for="Rom.RomFile" class="text-danger"></span>
+                <label asp-for="Rom.FileUploads" class="control-label"></label>
+                <input asp-for="Rom.FileUploads" type="file" class="form-control" multiple/>
+                <span asp-validation-for="Rom.FileUploads" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
