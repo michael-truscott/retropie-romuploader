@@ -14,6 +14,8 @@ using RetroPieRomUploader.ViewModels;
 
 namespace RetroPieRomUploader.Pages.Roms
 {
+    [RequestSizeLimit(1_073_741_824)] // 1 GB
+    [RequestFormLimits(MultipartBodyLengthLimit = 1_073_741_824)]
     public class CreateModel : PageModel
     {
         private readonly RetroPieRomUploader.Data.RetroPieRomUploaderContext _context;
