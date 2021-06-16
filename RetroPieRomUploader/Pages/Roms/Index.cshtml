@@ -8,61 +8,91 @@
 <h1>Roms</h1>
 
 <p>
-    <a asp-page="Create">Create New</a>
+    <a class="btn btn-success" asp-page="Create">Create New</a> | 
+    <button class="btn btn-warning" type="button" onclick="onRebootClicked(); return false;">Reboot EmulationStation</button>
 </p>
-<form>
-    <label>Filter by Console: </label>
-    <select asp-for="ConsoleFilter" asp-items="Model.ConsoleList">
-        <option value="">All</option>
-    </select>
-    <input type="submit" value="Go"/>
-</form>
-<table class="table">
+<div class="my-4">
+    <form>
+        <div>
+            <label>Filter by Console: </label>
+            <select asp-for="ConsoleFilter" asp-items="Model.ConsoleList" onchange="this.form.submit();">
+                <option value="">All</option>
+            </select>
+        </div>
+
+        <div>
+            <label asp-for="SearchString">Search: </label>
+            <input asp-for="SearchString" type="text" />
+            <input type="submit" value="Search" class="btn btn-primary" />
+        </div>
+    </form>
+</div>
+<table class="table table-bordered">
     <thead>
         <tr>
-            <th>
+            <th class="text-center">
                 @Html.DisplayNameFor(model => model.RomDetails[0].Title)
             </th>
-            <th>
+            <th class="text-center">
                 @Html.DisplayNameFor(model => model.RomDetails[0].ConsoleType)
             </th>
-            <th>
+            <th class="text-center">
                 @Html.DisplayNameFor(model => model.RomDetails[0].ReleaseDate)
             </th>
-            <th>
+            <th class="text-center">
                 @Html.DisplayNameFor(model => model.RomDetails[0].FileEntries)
             </th>
-            <th></th>
+            <th class="text-center">Actions</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.RomDetails) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ConsoleType.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ReleaseDate)
-            </td>
-            <td>
-                <table class="table table-borderless">
-                @foreach (var file in item.FileEntries)
-                {
-                    <tr>
-                        <td>@Html.DisplayFor(modelItem => file)</td>
-                    </tr>
-                }
-                </table>
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.ID">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.ID">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model.RomDetails)
+        {
+            <tr>
+                <td class="text-center align-middle">
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td class="text-center align-middle">
+                    @Html.DisplayFor(modelItem => item.ConsoleType.Name)
+                </td>
+                <td class="text-center align-middle">
+                    @Html.DisplayFor(modelItem => item.ReleaseDate)
+                </td>
+                <td>
+                    <table class="table table-borderless">
+                        @foreach (var file in item.FileEntries)
+                        {
+                            <tr>
+                                <td class="text-center">@Html.DisplayFor(modelItem => file)</td>
+                            </tr>
+                        }
+                    </table>
+                </td>
+                <td class="text-center align-middle">
+                    <div class="btn-group-sm">
+                        <a asp-page="./Edit" asp-route-id="@item.ID" class="btn btn-primary">Edit</a>
+                        <a asp-page="./Details" asp-route-id="@item.ID" class="btn btn-info">Details</a>
+                        <a asp-page="./Delete" asp-route-id="@item.ID" class="btn btn-danger">Delete</a>
+                    </div>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+@Html.AntiForgeryToken()
+
+<script>
+    function onRebootClicked() {
+        bootbox.confirm('Are you sure you want to reboot EmulatorStation?', (result) => {
+            if (result) {
+                fetch('?handler=Reboot', {
+                    method: 'POST',
+                    headers: {
+                        RequestVerificationToken: $('input:hidden[name="__RequestVerificationToken"]').val()
+                    }
+                });
+            }
+        });
+    }
+</script>
