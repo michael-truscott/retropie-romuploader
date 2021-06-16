@@ -8,7 +8,7 @@
 <h1>Roms</h1>
 
 <p>
-    <a class="btn btn-success" asp-page="Create">Create New</a> | 
+    <a class="btn btn-success" asp-page="Create" asp-route-console="@Model.ConsoleFilter">Create New</a> | 
     <button class="btn btn-warning" type="button" onclick="onRebootClicked(); return false;">Reboot EmulationStation</button>
 </p>
 <div class="my-4">
@@ -69,9 +69,9 @@
                     </table>
                 </td>
                 <td class="text-center align-middle">
-                    <div class="btn-group-sm">
-                        <a asp-page="./Edit" asp-route-id="@item.ID" class="btn btn-primary">Edit</a>
-                        <a asp-page="./Details" asp-route-id="@item.ID" class="btn btn-info">Details</a>
+                    <div>
+                        <a asp-page="./Edit" asp-route-id="@item.ID" class="btn btn-primary">Edit</a> 
+                        <a asp-page="./Details" asp-route-id="@item.ID" class="btn btn-info">Details</a> 
                         <a asp-page="./Delete" asp-route-id="@item.ID" class="btn btn-danger">Delete</a>
                     </div>
                 </td>

@@ -31,13 +31,15 @@ namespace RetroPieRomUploader.Pages.Roms
 
         public async Task<IActionResult> OnGetAsync()
         {
-            ConsoleList = new SelectList(await _context.ConsoleType.OrderBy(c => c.Name).ToListAsync(), nameof(ConsoleType.ID), nameof(ConsoleType.Name));
+            ConsoleList = new SelectList(await _context.ConsoleType.OrderBy(c => c.Name).ToListAsync(), nameof(ConsoleType.ID), nameof(ConsoleType.Name), Console);
             return Page();
         }
 
         [BindProperty]
         public CreateRomVM Rom { get; set; }
 
+        [BindProperty(SupportsGet = true)]
+        public string Console { get; set; }
         public SelectList ConsoleList { get; set; }
 
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
