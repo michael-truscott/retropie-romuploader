@@ -8,8 +8,8 @@
 <h1>Roms</h1>
 
 <p>
-    <a class="btn btn-success" asp-page="Create" asp-route-console="@Model.ConsoleFilter">Create New</a> | 
-    <button class="btn btn-warning" type="button" onclick="onRebootClicked(); return false;">Reboot EmulationStation</button>
+    <a class="btn btn-success" asp-page="Create" asp-route-console="@Model.ConsoleFilter"><i class="fas fa-plus"></i> Create New</a> | 
+    <button class="btn btn-warning" type="button" onclick="onRebootClicked(); return false;"><i class="fas fa-sync"></i> Reboot EmulationStation</button>
 </p>
 <div class="my-4">
     <form>
@@ -23,7 +23,7 @@
         <div>
             <label asp-for="SearchString">Search: </label>
             <input asp-for="SearchString" type="text" />
-            <input type="submit" value="Search" class="btn btn-primary" />
+            <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
         </div>
     </form>
 </div>
@@ -36,10 +36,10 @@
             <th class="text-center">
                 @Html.DisplayNameFor(model => model.RomDetails[0].ConsoleType)
             </th>
-            <th class="text-center">
+            <th class="text-center d-none d-md-table-cell">
                 @Html.DisplayNameFor(model => model.RomDetails[0].ReleaseDate)
             </th>
-            <th class="text-center">
+            <th class="text-center d-none d-md-table-cell">
                 @Html.DisplayNameFor(model => model.RomDetails[0].FileEntries)
             </th>
             <th class="text-center">Actions</th>
@@ -55,11 +55,11 @@
                 <td class="text-center align-middle">
                     @Html.DisplayFor(modelItem => item.ConsoleType.Name)
                 </td>
-                <td class="text-center align-middle">
+                <td class="text-center align-middle d-none d-md-table-cell">
                     @Html.DisplayFor(modelItem => item.ReleaseDate)
                 </td>
-                <td>
-                    <table class="table table-borderless">
+                <td class="d-none d-md-table-cell">
+                    <table class="table table-borderless d-none d-md-table">
                         @foreach (var file in item.FileEntries)
                         {
                             <tr>
@@ -72,7 +72,7 @@
                     <div>
                         <a asp-page="./Edit" asp-route-id="@item.ID" class="btn btn-primary">Edit</a> 
                         <a asp-page="./Details" asp-route-id="@item.ID" class="btn btn-info">Details</a> 
-                        <a asp-page="./Delete" asp-route-id="@item.ID" class="btn btn-danger">Delete</a>
+                        <a asp-page="./Delete" asp-route-id="@item.ID" class="btn btn-danger"><i class="far fa-trash-alt"></i> Delete</a>
                     </div>
                 </td>
             </tr>
