@@ -24,7 +24,7 @@ namespace RetroPieRomUploader.ViewModels
         [DataType(DataType.Date)]
         public DateTime? ReleaseDate { get; set; }
 
-        public List<string> FileEntries { get; set; }
+        public List<RomFileEntry> FileEntries { get; set; }
 
         public static EditRomVM FromRom(Rom r)
         {
@@ -34,7 +34,7 @@ namespace RetroPieRomUploader.ViewModels
                 Title = r.Title,
                 ConsoleTypeID = r.ConsoleTypeID,
                 ReleaseDate = r.ReleaseDate,
-                FileEntries = r.FileEntries.Select(e => e.Filename).ToList(),
+                FileEntries = r.FileEntries,
             };
         }
     }

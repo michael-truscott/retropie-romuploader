@@ -14,7 +14,13 @@ namespace RetroPieRomUploader.Data
         {
         }
 
-        public DbSet<RetroPieRomUploader.Models.Rom> Rom { get; set; }
-        public DbSet<RetroPieRomUploader.Models.ConsoleType> ConsoleType { get; set; }
+        public DbSet<Rom> Rom { get; set; }
+        public DbSet<ConsoleType> ConsoleType { get; set; }
+        public DbSet<RomFileEntry> RomFileEntries { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<RomFileEntry>().ToTable("RomFileEntry");
+        }
     }
 }
